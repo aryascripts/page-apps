@@ -41,7 +41,7 @@ const tools = [
   },
   {
     name: "Mortgage Term Amortization",
-    path: "/amortization-terms",
+    path: "/page-apps/amortization-terms",
     description:
       "Canadian-style mortgage calculator with term-by-term rates and extra payments",
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="rgb(66, 95, 226)" stroke-width="2">
