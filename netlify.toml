@@ -1,0 +1,13 @@
+# Netlify configuration
+[build]
+  # Build command to run
+  command = "npm run build"
+  # Directory to publish (where Netlify serves files from)
+  publish = "dist"
+
+# Optional: Redirect rules if needed
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+

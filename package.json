@@ -1,8 +1,10 @@
 {
   "type": "module",
   "scripts": {
+    "build": "node build.js",
     "serve": "serve",
     "serve:bmp": "serve bmp-convert",
+    "serve:dist": "serve dist",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage"
@@ -12,6 +14,8 @@
   },
   "devDependencies": {
     "vitest": "^1.0.0",
-    "@vitest/ui": "^1.0.0"
+    "@vitest/ui": "^1.0.0",
+    "terser": "^5.26.0",
+    "clean-css": "^5.3.3"
   }
 }
