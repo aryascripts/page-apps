@@ -15,6 +15,20 @@
     <meta name="author" content="Your Name" />
     <meta name="theme-color" content="#667eea" />
 
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-8YWMM5XTMD"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-8YWMM5XTMD");
+    </script>
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Image to BMP Converter" />
@@ -35,7 +49,7 @@
     <!-- Note: frame-ancestors must be set via HTTP headers, not meta tag -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.buymeacoffee.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src https://cdnjs.buymeacoffee.com https://www.buymeacoffee.com;"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.buymeacoffee.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src https://cdnjs.buymeacoffee.com https://www.buymeacoffee.com https://www.googletagmanager.com https://www.google-analytics.com;"
     />
     <!-- Clickjacking protection -->
     <!-- Note: X-Frame-Options must be set via HTTP headers, not meta tag -->
