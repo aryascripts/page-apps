@@ -23,48 +23,44 @@ function sanitizeURL(url) {
   return cleaned.replace(/[\x00-\x1F\x7F]/g, "");
 }
 
-// Security: Create SVG element safely
-function createSVGIcon(svgString) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(svgString, "image/svg+xml");
-  const svg = doc.querySelector("svg");
-  if (!svg) {
-    return null;
-  }
-  // Remove any script tags or event handlers as an extra safety measure
-  const scripts = svg.querySelectorAll("script");
-  scripts.forEach((script) => script.remove());
-  // Remove event handlers
-  const allElements = svg.querySelectorAll("*");
-  allElements.forEach((el) => {
-    Array.from(el.attributes).forEach((attr) => {
-      if (attr.name.startsWith("on")) {
-        el.removeAttribute(attr.name);
-      }
-    });
-  });
-  return svg;
-}
+// Note: We're using innerHTML for simplicity. The SVG strings are hardcoded
+// and safe, so this is acceptable. For user-generated content, we'd need
+// the createSVGIcon function above for security.
 
 const tools = [
-  {
-    name: "Tap Counter",
-    path: "/page-apps/counter",
-    description: "A simple tap counter with dark mode support",
-    icon: `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`,
-  },
   {
     name: "Image to BMP Converter",
     path: "/page-apps/bmp-convert",
     description:
       "Convert PNG/JPEG images to BMP format locally in your browser",
-    icon: `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="rgb(66, 95, 226)" stroke-width="2">
       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="8.5" cy="8.5" r="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M21 15l-5-5L5 21" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+  },
+  {
+    name: "Mortgage Term Amortization",
+    path: "/amortization-terms",
+    description:
+      "Canadian-style mortgage calculator with term-by-term rates and extra payments",
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="rgb(66, 95, 226)" stroke-width="2">
+      <path d="M3 21h18" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5 21V7l8-4v18" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19 21V11l-6-4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 9v0" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 12v0" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 15v0" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 18v0" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+  },
+  {
+    name: "Tap Counter",
+    path: "/page-apps/counter",
+    description: "A simple tap counter with dark mode support",
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="rgb(66, 95, 226)" stroke-width="2">
+      <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`,
   },
 ];
@@ -89,10 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const iconContainer = document.createElement("div");
     iconContainer.className = "tool-icon";
-    const svgIcon = createSVGIcon(tool.icon);
-    if (svgIcon) {
-      iconContainer.appendChild(svgIcon);
-    }
+    // Simply set innerHTML with the SVG - much simpler and more reliable
+    iconContainer.innerHTML = tool.icon;
 
     const nameHeading = document.createElement("h3");
     nameHeading.className = "tool-name";

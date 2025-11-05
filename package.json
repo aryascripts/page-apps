@@ -1,9 +1,17 @@
 {
+  "type": "module",
   "scripts": {
     "serve": "serve",
-    "serve:bmp": "serve bmp-convert"
+    "serve:bmp": "serve bmp-convert",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "serve": "^14.2.5"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "@vitest/ui": "^1.0.0"
   }
 }

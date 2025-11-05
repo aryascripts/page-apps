@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Canadian-style mortgage calculator with term-by-term interest rates and extra payments. Calculate amortization schedules instantly."
+    />
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-8YWMM5XTMD"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-8YWMM5XTMD");
+    </script>
+
+    <title>Mortgage Term Amortization</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header card">
+        <svg
+          class="logo"
+          width="40"
+          height="40"
+          viewBox="0 0 40 40"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="40" height="40" rx="8" fill="url(#gradient)" />
+          <path
+            d="M20 8L12 12V20L20 24L28 20V12L20 8Z"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M12 12L20 16L28 12M20 16V24"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <defs>
+            <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
+              <stop offset="0%" stop-color="#667eea" />
+              <stop offset="100%" stop-color="#764ba2" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <h1>Mortgage Term Amortization</h1>
+          <p>
+            Canadian-style mortgage with term-by-term rates and extra payments
+          </p>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <!-- Input Section -->
+        <div class="card">
+          <h3 class="card-heading">Mortgage Details</h3>
+          <div class="input-group">
+            <label for="initialBalance">
+              <span>Initial Mortgage Balance (CAD)</span>
+              <input
+                type="number"
+                id="initialBalance"
+                min="0"
+                step="0.01"
+                placeholder="500000"
+                required
+              />
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label for="initialRate">
+              <span>Initial Interest Rate (Annual %)</span>
+              <input
+                type="number"
+                id="initialRate"
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="5.5"
+                required
+              />
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label for="amortizationYears">
+              <span>Amortization Period (Years)</span>
+              <input
+                type="number"
+                id="amortizationYears"
+                min="1"
+                max="50"
+                value="25"
+                required
+              />
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label for="termLengthYears">
+              <span>Term Length (Years)</span>
+              <input
+                type="number"
+                id="termLengthYears"
+                min="1"
+                max="20"
+                value="5"
+                required
+              />
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label for="extraPayment">
+              <span>Extra Monthly Payment (CAD)</span>
+              <input
+                type="number"
+                id="extraPayment"
+                min="0"
+                step="0.01"
+                value="0"
+                placeholder="0"
+              />
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label>
+              <span>Interest Rates for Future Terms (Annual %)</span>
+              <div class="help-text">
+                Enter rates for Term 2 and beyond. Term 1 uses the Initial
+                Interest Rate above. The calculator will determine how many
+                terms are needed.
+              </div>
+            </label>
+            <div id="termRatesContainer">
+              <div class="term-rate-input">
+                <label>
+                  <span>Term 2 Rate:</span>
+                  <input
+                    type="number"
+                    class="term-rate"
+                    data-term="2"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="5.5"
+                  />
+                </label>
+              </div>
+            </div>
+            <button type="button" class="btn-add-term" id="addTermBtn">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add Another Term Rate
+            </button>
+          </div>
+
+          <button class="btn-convert" id="calculateBtn">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                d="M22 11.08V12a10 10 0 1 1-5.93-9.14"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M22 4L12 14.01l-3-3"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Calculate Mortgage
+          </button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" style="display: none">
+          <!-- Summary Card -->
+          <div class="card">
+            <h3 class="card-heading">Summary</h3>
+            <div class="summary-grid" id="summaryGrid"></div>
+          </div>
+
+          <!-- Term Summary Table -->
+          <div class="card">
+            <h3 class="card-heading">Term-by-Term Summary</h3>
+            <div class="table-container">
+              <table id="termSummaryTable">
+                <thead>
+                  <tr>
+                    <th>Term</th>
+                    <th>Starting Balance</th>
+                    <th>Ending Balance</th>
+                    <th>Interest Rate</th>
+                    <th>Monthly Payment</th>
+                    <th>Total Interest</th>
+                    <th>Total Principal</th>
+                    <th>Extra Payments</th>
+                    <th>Interest Saved</th>
+                  </tr>
+                </thead>
+                <tbody id="termSummaryBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Monthly Amortization Table -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-heading">Monthly Amortization Schedule</h3>
+              <div class="table-controls">
+                <label>
+                  <span>Show:</span>
+                  <select id="monthlyTableFilter">
+                    <option value="all">All Months</option>
+                    <option value="first12">First 12 Months</option>
+                    <option value="first24">First 24 Months</option>
+                    <option value="last12">Last 12 Months</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="table-container">
+              <table id="monthlyTable">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Starting Balance</th>
+                    <th>Required Payment</th>
+                    <th>Extra Payment</th>
+                    <th>Total Payment</th>
+                    <th>Interest Paid</th>
+                    <th>Principal Paid</th>
+                    <th>Ending Balance</th>
+                    <th>Term</th>
+                  </tr>
+                </thead>
+                <tbody id="monthlyTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Notification -->
+        <div class="notification" id="notification">
+          <svg
+            id="notificationIcon"
+            class="notification-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              d="M22 11.08V12a10 10 0 1 1-5.93-9.14"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M22 4L12 14.01l-3-3"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span id="notificationText"></span>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <a href="../index.html" class="footer-link">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9 22V12h6v10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Home</span>
+        </a>
+      </footer>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

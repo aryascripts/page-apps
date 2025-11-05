@@ -37,51 +37,38 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <title>Arya's Scripts</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>"
+    />
     <link rel="stylesheet" href="./bmp-convert/styles.css" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="container">
       <header class="header card">
-        <svg
-          class="logo"
-          width="40"
-          height="40"
-          viewBox="0 0 40 40"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="40" height="40" rx="8" fill="url(#gradient)" />
-          <path
-            d="M12 15L20 10L28 15V25L20 30L12 25V15Z"
-            stroke="white"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M20 10V20M12 15L20 20L28 15"
-            stroke="white"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
-              <stop offset="0%" stop-color="#667eea" />
-              <stop offset="100%" stop-color="#764ba2" />
-            </linearGradient>
-          </defs>
-        </svg>
+        <span class="logo">💜</span>
         <div>
           <h1>Arya's Scripts</h1>
-          <p>Simple, useful scripts, always free and open source</p>
+          <p>Simple, useful scripts: always free and open source</p>
         </div>
       </header>
 
       <main class="main-content">
         <div class="tools-grid" id="toolsGrid"></div>
       </main>
+
+      <footer class="source-footer">
+        <a
+          href="https://github.com/aryascripts/page-apps"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="source-link"
+        >
+          <img src="./source.svg" alt="Source code" width="20" height="20" />
+          <span>View Source Code</span>
+        </a>
+      </footer>
     </div>
 
     <script src="./script.js"></script>

@@ -1,3 +1,14 @@
+:root {
+  --primary: #667eea;
+  --primary-dark: #5568d3;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
 .tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -23,28 +34,45 @@
 }
 
 .tool-card .card:hover {
-  box-shadow: var(–shadow-xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.logo {
+  font-size: 2.5rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .tool-icon {
   width: 48px;
   height: 48px;
   margin-bottom: 1rem;
-  color: var(–primary);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tool-icon svg {
+  display: block;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  padding: 0;
 }
 
 .tool-name {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(–gray-900);
+  color: var(--gray-900);
   margin-bottom: 0.5rem;
 }
 
 .tool-description {
-  color: var(–gray-600);
+  color: var(--gray-600);
   font-size: 0.875rem;
   line-height: 1.5;
-  margin-top: auto;
 }
 
 .header h1 {
@@ -57,24 +85,24 @@
 
 /* Link styling */
 a {
-  color: var(–primary);
+  color: var(--primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(–primary-dark);
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
 a:focus {
-  outline: 2px solid var(–primary);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
 a:active {
-  color: var(–primary-dark);
+  color: var(--primary-dark);
 }
 
 /* Tool cards are already styled, but ensure regular links look good */
@@ -123,4 +151,54 @@ a:active {
 .bmc-btn iframe {
   transform: scale(0.75) !important;
   transform-origin: center !important;
+}
+
+/* Source Code Footer */
+.source-footer {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  color: var(--gray-700);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+
+.source-link:hover {
+  color: var(--gray-900);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+
+.source-link img {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .source-footer {
+    margin-top: 2rem;
+    padding: 1.5rem 0;
+  }
+
+  .source-link {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+  }
 }
