@@ -32,10 +32,13 @@
     />
 
     <!-- Security: Content Security Policy -->
+    <!-- Note: frame-ancestors must be set via HTTP headers, not meta tag -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none';"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.buymeacoffee.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src https://cdnjs.buymeacoffee.com https://www.buymeacoffee.com;"
     />
+    <!-- Clickjacking protection -->
+    <!-- Note: X-Frame-Options must be set via HTTP headers, not meta tag -->
 
     <title>
       Image to BMP Converter - Free & Private | Xteink Wallpaper Tool
@@ -115,10 +118,11 @@
           />
         </div>
 
-        <div class="preview-section" id="previewSection">
-          <div class="card">
+        <div id="previewSection" style="display: none">
+          <!-- Settings Card: Resize Options and Compression -->
+          <div class="card settings-card">
             <div class="card-header">
-              <h3 class="card-heading">Preview</h3>
+              <h3 class="card-heading">Settings</h3>
               <button class="btn-clear" id="clearBtn">
                 <svg
                   width="20"
@@ -136,80 +140,214 @@
                 Clear
               </button>
             </div>
-            <div class="preview-wrapper">
-              <img id="preview" alt="Preview" />
+
+            <div class="settings-group">
+              <h4 class="settings-label">Resize Options</h4>
+              <div class="crop-options" id="cropOptions">
+                <label class="crop-option">
+                  <input
+                    type="radio"
+                    name="cropOption"
+                    value="original"
+                    id="cropOriginal"
+                    autocomplete="off"
+                  />
+                  <span>Original</span>
+                </label>
+                <label class="crop-option">
+                  <input
+                    type="radio"
+                    name="cropOption"
+                    value="xteink"
+                    id="cropXteink"
+                    checked
+                    autocomplete="off"
+                  />
+                  <span>Xteink (480×800)</span>
+                </label>
+                <label class="crop-option">
+                  <input
+                    type="radio"
+                    name="cropOption"
+                    value="custom"
+                    id="cropCustom"
+                    autocomplete="off"
+                  />
+                  <span>Custom</span>
+                </label>
+              </div>
+              <div id="customCropInputs" style="display: none">
+                <label>
+                  <span>Width:</span>
+                  <input
+                    type="number"
+                    id="customWidth"
+                    min="1"
+                    value="480"
+                    placeholder="Width"
+                  />
+                </label>
+                <label>
+                  <span>Height:</span>
+                  <input
+                    type="number"
+                    id="customHeight"
+                    min="1"
+                    value="800"
+                    placeholder="Height"
+                  />
+                </label>
+              </div>
+              <div
+                class="crop-position-selector"
+                id="cropPositionSelector"
+                style="display: none"
+              >
+                <h4 class="settings-label">Crop Position</h4>
+                <div class="crop-position-grid">
+                  <button
+                    class="crop-position-btn"
+                    data-position="top"
+                    type="button"
+                    aria-label="Crop from top"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M12 19V5M5 12l7-7 7 7" />
+                    </svg>
+                    <span>Top</span>
+                  </button>
+                  <button
+                    class="crop-position-btn"
+                    data-position="left"
+                    type="button"
+                    aria-label="Crop from left"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    <span>Left</span>
+                  </button>
+                  <button
+                    class="crop-position-btn active"
+                    data-position="center"
+                    type="button"
+                    aria-label="Crop from center"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                    </svg>
+                    <span>Center</span>
+                  </button>
+                  <button
+                    class="crop-position-btn"
+                    data-position="right"
+                    type="button"
+                    aria-label="Crop from right"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                    <span>Right</span>
+                  </button>
+                  <button
+                    class="crop-position-btn"
+                    data-position="bottom"
+                    type="button"
+                    aria-label="Crop from bottom"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M12 5v14M5 12l7 7 7-7" />
+                    </svg>
+                    <span>Bottom</span>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div class="image-info" id="imageInfo"></div>
+
+            <div class="settings-group">
+              <h4 class="settings-label">Compression Level</h4>
+              <label class="compression-option">
+                <select id="compressionLevel">
+                  <option value="24" selected>24-bit</option>
+                  <option value="8">8-bit</option>
+                  <option value="8-dithered">8-bit (dithered)</option>
+                  <option value="4">4-bit</option>
+                  <option value="4-aggressive">4-bit (dithered)</option>
+                </select>
+              </label>
+            </div>
           </div>
 
-          <div class="card" id="resizeCard">
-            <h3 class="card-heading">Resize Options</h3>
-            <div class="crop-options" id="cropOptions">
-              <label class="crop-option">
-                <input
-                  type="radio"
-                  name="cropOption"
-                  value="original"
-                  id="cropOriginal"
-                />
-                <span>Original</span>
-              </label>
-              <label class="crop-option">
-                <input
-                  type="radio"
-                  name="cropOption"
-                  value="xteink"
-                  id="cropXteink"
-                  checked
-                />
-                <span>Xteink (480×800)</span>
-              </label>
-              <label class="crop-option">
-                <input
-                  type="radio"
-                  name="cropOption"
-                  value="custom"
-                  id="cropCustom"
-                />
-                <span>Custom</span>
-              </label>
+          <!-- Preview Card with Tabs -->
+          <div class="card preview-card">
+            <div class="tab-bar">
+              <button class="tab-btn" id="tabOriginal" data-tab="original">
+                Original
+              </button>
+              <button class="tab-btn active" id="tabPreview" data-tab="preview">
+                Preview
+              </button>
             </div>
-            <div id="customCropInputs" style="display: none">
-              <label>
-                <span>Width:</span>
-                <input
-                  type="number"
-                  id="customWidth"
-                  min="1"
-                  value="480"
-                  placeholder="Width"
-                />
-              </label>
-              <label>
-                <span>Height:</span>
-                <input
-                  type="number"
-                  id="customHeight"
-                  min="1"
-                  value="800"
-                  placeholder="Height"
-                />
-              </label>
+
+            <!-- Original Tab Content -->
+            <div class="tab-content" id="tabContentOriginal">
+              <div class="preview-wrapper">
+                <img id="preview" alt="Original image" />
+              </div>
+              <div class="image-info" id="imageInfo"></div>
+            </div>
+
+            <!-- Preview Tab Content -->
+            <div class="tab-content active" id="tabContentPreview">
+              <div
+                class="compression-help"
+                id="compressionHelp"
+                style="display: none"
+              >
+                <p id="compressionHelpText"></p>
+              </div>
+              <div class="preview-wrapper">
+                <canvas id="previewCanvas" alt="Converted preview"></canvas>
+              </div>
             </div>
           </div>
 
+          <!-- Convert Button Card -->
           <div class="card">
             <h3 class="card-heading">Ready to Convert</h3>
-            <p>Your image will be converted to BMP format</p>
-            <label class="compression-option">
-              <span>Compression Level:</span>
-              <select id="compressionLevel">
-                <option value="24">24-bit (No compression) - ~1.1 MB</option>
-                <option value="8" selected>8-bit (Standard) - ~376 KB</option>
-                <option value="4">4-bit (High compression) - ~188 KB</option>
-                <option value="4-aggressive">4-bit Aggressive - ~150 KB</option>
-              </select>
-            </label>
             <button class="btn-convert" id="convertBtn">
               <svg
                 width="20"
@@ -265,6 +403,24 @@
     </div>
 
     <canvas id="canvas" hidden></canvas>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
+    <!-- Buy Me a Coffee button - disabled for now -->
+    <!--
+    <div class="bmc-button-container">
+      <script
+        type="text/javascript"
+        src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+        data-name="bmc-button"
+        data-slug="aryascripts"
+        data-color="#feffff"
+        data-emoji=""
+        data-font="Cookie"
+        data-text="Buy me a coffee"
+        data-outline-color="#000000"
+        data-font-color="#000000"
+        data-coffee-color="#FFDD00"
+      ></script>
+    </div>
+    -->
   </body>
 </html>

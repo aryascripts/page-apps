@@ -1,0 +1,126 @@
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.tool-card {
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+}
+
+.tool-card .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.tool-card .card:hover {
+  box-shadow: var(–shadow-xl);
+}
+
+.tool-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: var(–primary);
+}
+
+.tool-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(–gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.tool-description {
+  color: var(–gray-600);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-top: auto;
+}
+
+.header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  margin: 0;
+}
+
+/* Link styling */
+a {
+  color: var(–primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(–primary-dark);
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: 2px solid var(–primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+a:active {
+  color: var(–primary-dark);
+}
+
+/* Tool cards are already styled, but ensure regular links look good */
+.tool-card {
+  color: inherit;
+}
+
+.tool-card:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Buy Me a Coffee Button Styling */
+/* Using !important is necessary here because the third-party script injects
+   dynamic HTML and inline styles that would otherwise override our styles */
+.bmc-button-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 2rem auto 0 !important;
+  padding-bottom: 2rem !important;
+}
+
+#bmc-wbtn,
+.bmc-btn,
+[data-name="bmc-button"] {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto !important;
+  transform: scale(0.65) !important;
+  transform-origin: center !important;
+}
+
+/* Container for the button */
+#bmc-wbtn-container,
+.bmc-btn-container {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+/* Iframe styling if the button is in an iframe */
+#bmc-wbtn iframe,
+.bmc-btn iframe {
+  transform: scale(0.75) !important;
+  transform-origin: center !important;
+}

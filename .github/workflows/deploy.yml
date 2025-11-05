@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Prepare production files
+        run: |
+          # Copy everything, excluding development files
+          rsync -av \
+            --exclude='node_modules/' \
+            --exclude='spec/' \
+            --exclude='*.test.js' \
+            --exclude='vitest.config.js' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='*.md' \
+            --exclude='.DS_Store' \
+            --exclude='.env' \
+            --exclude='*.log' \
+            ./ _site/
+
+          # Verify deployment structure
+          echo "Deployment structure:"
+          find _site -type f | sort
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

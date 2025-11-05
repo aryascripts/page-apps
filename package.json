@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "serve": "serve",
+    "serve:bmp": "serve bmp-convert"
+  },
+  "dependencies": {
+    "serve": "^14.2.5"
+  }
+}
