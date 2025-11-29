@@ -25,7 +25,10 @@ const previewCtx = previewCanvas.getContext("2d");
 const cropOriginal = document.getElementById("cropOriginal");
 const cropXteink = document.getElementById("cropXteink");
 const cropCustom = document.getElementById("cropCustom");
+const cropFit = document.getElementById("cropFit");
 const customCropInputs = document.getElementById("customCropInputs");
+const fitOptions = document.getElementById("fitOptions");
+const backgroundColorInput = document.getElementById("backgroundColor");
 const customWidth = document.getElementById("customWidth");
 const customHeight = document.getElementById("customHeight");
 const cropPositionSelector = document.getElementById("cropPositionSelector");
@@ -180,6 +183,12 @@ function setupEventListeners() {
       updatePreview();
     });
   }
+  if (cropFit) {
+    cropFit.addEventListener("change", () => {
+      handleCropOptionChange();
+      updatePreview();
+    });
+  }
 
   // Custom dimension inputs
   if (customWidth) {
@@ -187,6 +196,9 @@ function setupEventListeners() {
   }
   if (customHeight) {
     customHeight.addEventListener("input", debounce(updatePreview, 300));
+  }
+  if (backgroundColorInput) {
+    backgroundColorInput.addEventListener("input", debounce(updatePreview, 100));
   }
 
   // Compression level change handler
@@ -241,10 +253,18 @@ function debounce(func, wait) {
 function handleCropOptionChange() {
   const isCustom = cropCustom && cropCustom.checked;
   const isXteink = cropXteink && cropXteink.checked;
-  const showCropPosition = isCustom || isXteink;
+  const isFit = cropFit && cropFit.checked;
 
+  // Show position selector for any mode that involves resizing/placement
+  const showCropPosition = isCustom || isXteink || isFit;
+
+  // Show dimension inputs for Custom and Fit (so Fit has a box to fit into)
   if (customCropInputs) {
-    customCropInputs.style.display = isCustom ? "flex" : "none";
+    customCropInputs.style.display = isCustom || isFit ? "flex" : "none";
+  }
+  // Show background color for Fit and Custom
+  if (fitOptions) {
+    fitOptions.style.display = isFit || isCustom ? "block" : "none";
   }
   if (cropPositionSelector) {
     cropPositionSelector.style.display = showCropPosition ? "block" : "none";
@@ -325,6 +345,74 @@ function calculateCropParams(
     sourceWidth: targetWidth / scale,
     sourceHeight: targetHeight / scale,
   };
+}
+
+// Parse hex color (#rgb, #rrggbb, #rrggbbaa) to RGBA object (alpha ignored -> 255)
+function parseHexColorToRGBA(hex) {
+  if (!hex) return { r: 0, g: 0, b: 0, a: 255 };
+  let h = String(hex).trim().replace(/^#/, "");
+  if (h.length === 3) {
+    const r = parseInt(h[0] + h[0], 16);
+    const g = parseInt(h[1] + h[1], 16);
+    const b = parseInt(h[2] + h[2], 16);
+    return { r, g, b, a: 255 };
+  }
+  if (h.length === 6 || h.length === 8) {
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return { r, g, b, a: 255 };
+  }
+  return { r: 0, g: 0, b: 0, a: 255 };
+}
+
+// Calculate fit (contain) parameters with position selection
+function calculateFitParams(
+  sourceWidth,
+  sourceHeight,
+  targetWidth,
+  targetHeight,
+  position = "center"
+) {
+  // Scale to fit entirely within target (like CSS object-fit: contain)
+  const scale = Math.min(
+    targetWidth / sourceWidth,
+    targetHeight / sourceHeight
+  );
+
+  const drawWidth = Math.round(sourceWidth * scale);
+  const drawHeight = Math.round(sourceHeight * scale);
+
+  const extraX = targetWidth - drawWidth;
+  const extraY = targetHeight - drawHeight;
+
+  let dx = Math.floor(extraX / 2);
+  let dy = Math.floor(extraY / 2);
+
+  switch (position) {
+    case "top":
+      dx = Math.floor(extraX / 2);
+      dy = 0;
+      break;
+    case "bottom":
+      dx = Math.floor(extraX / 2);
+      dy = extraY;
+      break;
+    case "left":
+      dx = 0;
+      dy = Math.floor(extraY / 2);
+      break;
+    case "right":
+      dx = extraX;
+      dy = Math.floor(extraY / 2);
+      break;
+    case "center":
+    default:
+      // already centered
+      break;
+  }
+
+  return { dx, dy, drawWidth, drawHeight };
 }
 
 function handleCompressionLevelChange() {
@@ -545,6 +633,12 @@ function updatePreview() {
     } else if (cropCustom && cropCustom.checked) {
       targetWidth = parseInt(customWidth.value) || currentImage.width;
       targetHeight = parseInt(customHeight.value) || currentImage.height;
+    } else if (cropFit && cropFit.checked) {
+      // For Fit, use custom box by default if provided; otherwise keep current image dimensions
+      const w = parseInt(customWidth?.value);
+      const h = parseInt(customHeight?.value);
+      if (Number.isInteger(w) && w > 0) targetWidth = w;
+      if (Number.isInteger(h) && h > 0) targetHeight = h;
     }
 
     // Validate dimensions
@@ -562,32 +656,58 @@ function updatePreview() {
     canvas.height = targetHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Get crop position (only if not original size)
-    const needsCropping =
+    // Get position for placement (only if not original size)
+    const needsSizing =
       targetWidth !== currentImage.width ||
       targetHeight !== currentImage.height;
-    const position = needsCropping ? getSelectedCropPosition() : "center";
+    const position = needsSizing ? getSelectedCropPosition() : "center";
 
-    // Calculate and apply crop
-    const crop = calculateCropParams(
-      currentImage.width,
-      currentImage.height,
-      targetWidth,
-      targetHeight,
-      position
-    );
+    if (cropFit && cropFit.checked) {
+      // Fill background then draw fitted image
+      const bg = parseHexColorToRGBA(backgroundColorInput ? backgroundColorInput.value : "#000000");
+      ctx.fillStyle = `rgb(${bg.r}, ${bg.g}, ${bg.b})`;
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-    ctx.drawImage(
-      currentImage,
-      crop.sourceX,
-      crop.sourceY,
-      crop.sourceWidth,
-      crop.sourceHeight,
-      0,
-      0,
-      targetWidth,
-      targetHeight
-    );
+      const fit = calculateFitParams(
+        currentImage.width,
+        currentImage.height,
+        targetWidth,
+        targetHeight,
+        position
+      );
+      ctx.drawImage(
+        currentImage,
+        0,
+        0,
+        currentImage.width,
+        currentImage.height,
+        fit.dx,
+        fit.dy,
+        fit.drawWidth,
+        fit.drawHeight
+      );
+    } else {
+      // Calculate and apply cover/crop
+      const crop = calculateCropParams(
+        currentImage.width,
+        currentImage.height,
+        targetWidth,
+        targetHeight,
+        position
+      );
+
+      ctx.drawImage(
+        currentImage,
+        crop.sourceX,
+        crop.sourceY,
+        crop.sourceWidth,
+        crop.sourceHeight,
+        0,
+        0,
+        targetWidth,
+        targetHeight
+      );
+    }
 
     // Get image data
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -683,6 +803,11 @@ function convertToBMP() {
     } else if (cropCustom && cropCustom.checked) {
       targetWidth = parseInt(customWidth.value) || currentImage.width;
       targetHeight = parseInt(customHeight.value) || currentImage.height;
+    } else if (cropFit && cropFit.checked) {
+      const w = parseInt(customWidth?.value);
+      const h = parseInt(customHeight?.value);
+      if (Number.isInteger(w) && w > 0) targetWidth = w;
+      if (Number.isInteger(h) && h > 0) targetHeight = h;
     }
     // If original, keep current dimensions
 
@@ -727,32 +852,57 @@ function convertToBMP() {
     canvas.height = targetHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Get crop position (only if not original size)
-    const needsCropping =
+    // Get position for placement (only if not original size)
+    const needsSizing =
       targetWidth !== currentImage.width ||
       targetHeight !== currentImage.height;
-    const position = needsCropping ? getSelectedCropPosition() : "center";
+    const position = needsSizing ? getSelectedCropPosition() : "center";
 
-    // Calculate and apply crop
-    const crop = calculateCropParams(
-      currentImage.width,
-      currentImage.height,
-      targetWidth,
-      targetHeight,
-      position
-    );
+    if (cropFit && cropFit.checked) {
+      const bg = parseHexColorToRGBA(backgroundColorInput ? backgroundColorInput.value : "#000000");
+      ctx.fillStyle = `rgb(${bg.r}, ${bg.g}, ${bg.b})`;
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-    ctx.drawImage(
-      currentImage,
-      crop.sourceX,
-      crop.sourceY,
-      crop.sourceWidth,
-      crop.sourceHeight,
-      0,
-      0,
-      targetWidth,
-      targetHeight
-    );
+      const fit = calculateFitParams(
+        currentImage.width,
+        currentImage.height,
+        targetWidth,
+        targetHeight,
+        position
+      );
+      ctx.drawImage(
+        currentImage,
+        0,
+        0,
+        currentImage.width,
+        currentImage.height,
+        fit.dx,
+        fit.dy,
+        fit.drawWidth,
+        fit.drawHeight
+      );
+    } else {
+      // Calculate and apply crop
+      const crop = calculateCropParams(
+        currentImage.width,
+        currentImage.height,
+        targetWidth,
+        targetHeight,
+        position
+      );
+
+      ctx.drawImage(
+        currentImage,
+        crop.sourceX,
+        crop.sourceY,
+        crop.sourceWidth,
+        crop.sourceHeight,
+        0,
+        0,
+        targetWidth,
+        targetHeight
+      );
+    }
 
     // Use manual BMP encoder (browsers don't natively support image/bmp format)
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);

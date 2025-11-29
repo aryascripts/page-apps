@@ -187,7 +187,17 @@
                     id="cropCustom"
                     autocomplete="off"
                   />
-                  <span>Custom</span>
+                  <span>Custom Crop to size</span>
+                </label>
+                <label class="crop-option">
+                  <input
+                    type="radio"
+                    name="cropOption"
+                    value="fit"
+                    id="cropFit"
+                    autocomplete="off"
+                  />
+                  <span>Custom Fit to size</span>
                 </label>
               </div>
               <div id="customCropInputs" style="display: none">
@@ -210,6 +220,12 @@
                     value="800"
                     placeholder="Height"
                   />
+                </label>
+              </div>
+              <div id="fitOptions" style="display: none; margin-top: 0.5rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem;">
+                  <span>Background:</span>
+                  <input type="color" id="backgroundColor" value="#000000" />
                 </label>
               </div>
               <div
